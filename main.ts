@@ -5,6 +5,7 @@ namespace SpriteKind {
     export const boss = SpriteKind.create()
     export const bossbullets = SpriteKind.create()
     export const playerbullet = SpriteKind.create()
+    export const shotgunBullet = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const bosshealth = StatusBarKind.create()
@@ -105,6 +106,7 @@ statusbars.onZero(StatusBarKind.bosshealth, function (status) {
 sprites.onOverlap(SpriteKind.playerbullet, SpriteKind.Enemy, function (sprite, otherSprite) {
     otherSprite.destroy(effects.disintegrate, 500)
     enemies.removeAt(enemies.indexOf(otherSprite))
+    enemies_2.removeAt(enemies_2.indexOf(otherSprite))
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (ammoCount > 0) {
@@ -288,32 +290,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.bossbullets, function (sprite, o
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile18`, function (sprite, location) {
     playerHealth.value += -0.1
 })
-statusbars.onZero(StatusBarKind.Health, function (status) {
-    game.over(false)
-})
-function createEnemy (x: number, y: number) {
-    angybullet = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . 4 . . . . . . . . 
-        . . . . . . 4 4 4 . . . . . . . 
-        . . . . . 4 4 4 4 4 . . . . . . 
-        . . . . . 4 4 4 4 4 . . . . . . 
-        . . . . 4 4 4 4 4 4 4 . . . . . 
-        . . . . 5 f 5 5 5 f 5 . . . . . 
-        . . . . 5 5 f 5 f 5 5 . . . . . 
-        . . . . 5 5 5 5 5 5 5 . . . . . 
-        . f f f 5 f 5 5 5 f 5 f f f . . 
-        . . . . 5 5 5 5 5 5 5 . . . . . 
-        . . . . 5 5 f 5 f 5 5 . . . . . 
-        . . . . 5 f 5 f 5 f 5 . . . . . 
-        . . . . f . . . . . f . . . . . 
-        . . . . f . . . . . f . . . . . 
-        `, SpriteKind.Enemy)
-    angybullet.setPosition(x, y)
-    enemies.push(angybullet)
-}
-function createEnemy2 (x: number, y: number) {
+function createshotgun (x: number, y: number) {
     angybullet = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
@@ -335,6 +312,31 @@ function createEnemy2 (x: number, y: number) {
     angybullet.setPosition(x, y)
     enemies_2.push(angybullet)
 }
+statusbars.onZero(StatusBarKind.Health, function (status) {
+    game.over(false)
+})
+function createBulletman (x: number, y: number) {
+    angybullet = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 4 . . . . . . . . 
+        . . . . . . 4 4 4 . . . . . . . 
+        . . . . . 4 4 4 4 4 . . . . . . 
+        . . . . . 4 4 4 4 4 . . . . . . 
+        . . . . 4 4 4 4 4 4 4 . . . . . 
+        . . . . 5 f 5 5 5 f 5 . . . . . 
+        . . . . 5 5 f 5 f 5 5 . . . . . 
+        . . . . 5 5 5 5 5 5 5 . . . . . 
+        . f f f 5 f 5 5 5 f 5 f f f . . 
+        . . . . 5 5 5 5 5 5 5 . . . . . 
+        . . . . 5 5 f 5 f 5 5 . . . . . 
+        . . . . 5 f 5 f 5 f 5 . . . . . 
+        . . . . f . . . . . f . . . . . 
+        . . . . f . . . . . f . . . . . 
+        `, SpriteKind.Enemy)
+    angybullet.setPosition(x, y)
+    enemies.push(angybullet)
+}
 scene.onOverlapTile(SpriteKind.Enemy, assets.tile`myTile18`, function (sprite, location) {
     sprite.follow(Jeff, 0)
 })
@@ -346,36 +348,44 @@ function setLevelTitleMap (num: number) {
     if (num == 0) {
         tiles.setTilemap(tilemap`level1`)
         Jeff.setPosition(25, 750)
-        createEnemy(250, 750)
-        createEnemy(250, 650)
-        createEnemy(310, 650)
-        createEnemy(310, 750)
-        createEnemy(650, 750)
-        createEnemy(700, 750)
-        createEnemy(250, 450)
-        createEnemy(250, 500)
-        createEnemy(350, 450)
-        createEnemy(350, 500)
+        createBulletman(250, 750)
+        createBulletman(250, 650)
+        createBulletman(310, 650)
+        createBulletman(310, 750)
+        createBulletman(650, 750)
+        createBulletman(700, 750)
+        createBulletman(250, 450)
+        createBulletman(250, 500)
+        createBulletman(350, 450)
+        createBulletman(350, 500)
     } else if (num == 1) {
         tiles.setTilemap(tilemap`level4`)
         Jeff.setPosition(25, 55)
-        createEnemy(250, 55)
-        createEnemy(375, 55)
-        createEnemy(350, 200)
-        createEnemy(275, 200)
-        createEnemy(275, 350)
-        createEnemy(350, 350)
-        createEnemy(275, 525)
-        createEnemy(350, 525)
-        createEnemy(275, 590)
-        createEnemy(350, 590)
+        createBulletman(250, 55)
+        createBulletman(375, 55)
+        createBulletman(350, 200)
+        createBulletman(275, 200)
+        createBulletman(275, 350)
+        createBulletman(350, 350)
+        createBulletman(275, 525)
+        createBulletman(350, 525)
+        createBulletman(275, 590)
+        createBulletman(350, 590)
     } else if (num == 2) {
         tiles.setTilemap(tilemap`2`)
         Jeff.setPosition(184, 345)
         spawnBoss(180, 175)
+    } else if (num == 3) {
+        createshotgun(184, 345)
+    } else {
+    	
     }
     hasNextLevel()
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.shotgunBullet, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    playerHealth.value += -20
+})
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenWest, function (sprite, location) {
     currentlevel += 1
     if (hasNextLevel()) {
@@ -395,12 +405,13 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenNorth, function (
     }
     setLevelTitleMap(currentlevel)
 })
-let bossbullet: Sprite = null
 let enemybullet: Sprite = null
-let enemies_2: Sprite[] = []
+let bossbullet: Sprite = null
+let shotgunbullet: Sprite = null
 let angybullet: Sprite = null
 let bullet: Sprite = null
 let dir = 0
+let enemies_2: Sprite[] = []
 let enemies: Sprite[] = []
 let bossbar: StatusBarSprite = null
 let boss: Sprite = null
@@ -430,13 +441,17 @@ Jeff = sprites.create(img`
     `, SpriteKind.Player)
 scene.setBackgroundColor(15)
 scene.cameraFollowSprite(Jeff)
-levelcount = 2
-currentlevel = 0
+levelcount = 5
+currentlevel = 3
 playerHealth = statusbars.create(20, 2, StatusBarKind.Health)
 playerHealth.attachToSprite(Jeff)
 setLevelTitleMap(currentlevel)
 setSafe = 0
 ammoCount = 30
+game.onUpdate(function () {
+    Jeff.x += controller.dx()
+    Jeff.y += controller.dy()
+})
 game.onUpdate(function () {
     if (currentlevel == 2) {
         if (sight.isInSight(
@@ -449,13 +464,9 @@ game.onUpdate(function () {
         }
     }
 })
-game.onUpdate(function () {
-    Jeff.x += controller.dx()
-    Jeff.y += controller.dy()
-})
 game.onUpdateInterval(2000, function () {
     for (let value of enemies_2) {
-        enemybullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -473,7 +484,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 50, 0)
-        enemybullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -491,7 +503,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 0, 50)
-        enemybullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -509,7 +522,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, -50, 0)
-        enemybullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -527,7 +541,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 0, -50)
-        bossbullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -545,7 +560,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 50, 50)
-        bossbullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -563,7 +579,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, -50, 50)
-        bossbullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -581,7 +598,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 50, -50)
-        bossbullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -599,7 +617,8 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, -50, -50)
-        bossbullet = sprites.createProjectileFromSprite(img`
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
+        shotgunbullet = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -617,6 +636,7 @@ game.onUpdateInterval(2000, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, value, 50, 50)
+        shotgunbullet.setKind(SpriteKind.shotgunBullet)
     }
 })
 game.onUpdateInterval(2000, function () {
@@ -639,6 +659,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, 50, 0)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -657,6 +678,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, 0, 50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -675,6 +697,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, -50, 0)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -693,6 +716,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, 0, -50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -711,6 +735,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, 50, 50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -729,6 +754,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, -50, 50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -747,6 +773,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, 50, -50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -765,6 +792,7 @@ game.onUpdateInterval(2000, function () {
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             `, boss, -50, -50)
+        bossbullet.setKind(SpriteKind.bossbullets)
         bossbullet = sprites.createProjectileFromSprite(img`
             . 2 2 2 2 2 2 2 2 2 2 2 2 2 2 . 
             2 2 2 2 4 4 2 2 2 2 4 4 2 2 2 2 
@@ -852,7 +880,7 @@ forever(function () {
     }
 })
 forever(function () {
-    for (let value of enemies) {
+    for (let value of enemies_2) {
         if (sight.isInSight(
         value,
         Jeff,
@@ -860,6 +888,18 @@ forever(function () {
         true
         )) {
             value.follow(Jeff, 25)
+        }
+    }
+})
+forever(function () {
+    for (let value of enemies) {
+        if (sight.isInSight(
+        value,
+        Jeff,
+        100,
+        true
+        )) {
+            value.follow(Jeff, 45)
         }
     }
 })
