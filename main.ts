@@ -86,7 +86,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.boolet, function (sprite, otherS
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (setSafe == 0) {
         if (controller.up.isPressed()) {
-            Jeff.setVelocity(0, -50)
+            Jeff.setVelocity(0, -75)
             animation.runImageAnimation(
             Jeff,
             [img`
@@ -180,7 +180,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             )
         }
         if (controller.left.isPressed()) {
-            Jeff.setVelocity(-50, 0)
+            Jeff.setVelocity(-75, 0)
             animation.runImageAnimation(
             Jeff,
             [img`
@@ -274,7 +274,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             )
         }
         if (controller.right.isPressed()) {
-            Jeff.setVelocity(50, 0)
+            Jeff.setVelocity(75, 0)
             animation.runImageAnimation(
             Jeff,
             [img`
@@ -368,7 +368,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             )
         }
         if (controller.down.isPressed()) {
-            Jeff.setVelocity(0, 50)
+            Jeff.setVelocity(0, 75)
             animation.runImageAnimation(
             Jeff,
             [img`
@@ -470,6 +470,63 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         setSafe = 0
     }
 })
+function spawnBoss2 (x: number, y: number) {
+    boss = sprites.create(img`
+        ..........................eee.....................
+        ........................eeee......................
+        ........................eee.......................
+        ........................eee.......................
+        ........................eee.......................
+        ...................fffffffffffff..................
+        .................fffffffffffffffff................
+        ...............fffffffffffffffffffff..............
+        .............fffffffffffffffffffffffff............
+        ............fffffffffffffffffffffffffff...........
+        ...........fffffffffffffffffffffffffffff..........
+        ..........fffffffffffffffffffffffffffffff.........
+        .........fffffffffffffffffffffffffffffffff........
+        .........fffffffffffffffffffffffffffffffff........
+        ........fffffffffffffffffffffffffffffffffff.......
+        ........fffffffffffffffffffffffffffffffffff.......
+        .......fffffffffffffffffffffffffffffffffffff......
+        .......fffffffffffffffffffffffffffffffffffff......
+        ......fffffffffffffffffffffffffffffffffffffff.....
+        ......fffffffffffffffffffffffffffffffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffff1111111fff1111111fffffffffff.....
+        ......fffffffffffffffffffffffffffffffffffffff.....
+        ......fffffffffffffffffffffffffffffffffffffff.....
+        ......fffffffffffffffffffffffffffffffffffffff.....
+        .......fffffffffffffffffffffffffffffffffffff......
+        .......fffffffffffffffffffffffffffffffffffff......
+        ........fffffffffffffffffffffffffffffffffff.......
+        ........fffffffffffffffffffffffffffffffffff.......
+        .........fffffffffffffffffffffffffffffffff........
+        .........fffffffffffffffffffffffffffffffff........
+        ..........fffffffffffffffffffffffffffffff.........
+        ...........fffffffffffffffffffffffffffff..........
+        ............fffffffffffffffffffffffffff...........
+        .............fffffffffffffffffffffffff............
+        ...............fffffffffffffffffffff..............
+        .................fffffffffffffffff................
+        ...................fffffffffffff..................
+        ...................ffff.....ffff..................
+        ...................ffff.....ffff..................
+        ...................ffff.....ffff..................
+        ...................ffff.....ffff..................
+        ...................ffff.....ffff..................
+        ...................ffff.....ffff..................
+        `, SpriteKind.boss)
+    boss.setPosition(x, y)
+    boss2bar = statusbars.create(100, 4, StatusBarKind.bosshealth)
+    boss2bar.positionDirection(CollisionDirection.Bottom)
+}
 statusbars.onZero(StatusBarKind.bosshealth, function (status) {
     boss.destroy(effects.disintegrate, 500)
     pause(1000)
@@ -690,8 +747,34 @@ function createshotgun (x: number, y: number) {
     angybullet.setPosition(x, y)
     enemies_2.push(angybullet)
 }
+function bombers (x: number, y: number) {
+    angybullet = sprites.create(img`
+        . . . . . . . . . e . . . . . . 
+        . . . . . . . . e . . . . . . . 
+        . . . . . f f f f f f f . . . . 
+        . . . . f f f f f f f f f . . . 
+        . . . f f f f f f f f f f f . . 
+        . . . f f f f f f f f f f f . . 
+        . . . f f f 1 1 f 1 1 f f f . . 
+        . . . f f f 1 1 f 1 1 f f f . . 
+        . . . f f f 1 1 f 1 1 f f f . . 
+        . . . f f f f f f f f f f f . . 
+        . . . f f f f f f f f f f f . . 
+        . . . . f f f f f f f f f . . . 
+        . . . . . f f f f f f f . . . . 
+        . . . . . . f . . . f . . . . . 
+        . . . . . . f . . . f . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Enemy)
+    angybullet.setPosition(x, y)
+    enemies3.push(angybullet)
+}
 statusbars.onZero(StatusBarKind.Health, function (status) {
     game.over(false)
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile21`, function (sprite, location) {
+    playerHealth.value += 50
+    tiles.setTileAt(location, assets.tile`myTile9`)
 })
 function createBulletman (x: number, y: number) {
     angybullet = sprites.create(img`
@@ -723,6 +806,8 @@ function setLevelTitleMap (num: number) {
         value.destroy()
     }
     enemies = []
+    enemies_2 = []
+    enemies3 = []
     if (num == 0) {
         tiles.setTilemap(tilemap`level1`)
         Jeff.setPosition(25, 750)
@@ -757,9 +842,25 @@ function setLevelTitleMap (num: number) {
         tiles.setTilemap(tilemap`level11`)
         Jeff.setPosition(153, 720)
         createshotgun(128, 544)
-        createshotgun(170, 444)
-        createBulletman(170, 544)
+        createshotgun(178, 444)
+        createBulletman(178, 544)
         createBulletman(128, 444)
+        createBulletman(265, 485)
+        createBulletman(265, 500)
+        createshotgun(85, 485)
+        createshotgun(85, 500)
+        createBulletman(605, 224)
+        createBulletman(660, 224)
+        createshotgun(416, 320)
+        createshotgun(490, 320)
+        createshotgun(416, 420)
+        createshotgun(490, 420)
+        createBulletman(185, 240)
+        createBulletman(120, 240)
+        createshotgun(520, 520)
+    } else if (num == 4) {
+        tiles.setTilemap(tilemap`level12`)
+        spawnBoss2(200, 165)
     } else {
     	
     }
@@ -788,18 +889,16 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenNorth, function (
     }
     setLevelTitleMap(currentlevel)
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile23`, function (sprite, location) {
-    playerHealth.value += 50
-    tiles.setTileAt(location, assets.tile`myTile9`)
-})
 let enemybullet: Sprite = null
 let bossbullet: Sprite = null
 let shotgunbullet: Sprite = null
+let enemies3: Sprite[] = []
 let angybullet: Sprite = null
 let bullet: Sprite = null
 let dir = 0
 let enemies_2: Sprite[] = []
 let enemies: Sprite[] = []
+let boss2bar: StatusBarSprite = null
 let bossbar: StatusBarSprite = null
 let boss: Sprite = null
 let ammoCount = 0
@@ -829,7 +928,7 @@ Jeff = sprites.create(img`
 scene.setBackgroundColor(15)
 scene.cameraFollowSprite(Jeff)
 levelcount = 5
-currentlevel = 3
+currentlevel = 4
 playerHealth = statusbars.create(20, 2, StatusBarKind.Health)
 playerHealth.attachToSprite(Jeff)
 setLevelTitleMap(currentlevel)
@@ -850,6 +949,12 @@ game.onUpdate(function () {
         )) {
             boss.follow(Jeff, 30)
         }
+    }
+})
+game.onUpdateInterval(5000, function () {
+    if (currentlevel == 4) {
+        bombers(randint(112, 272), randint(80, 240))
+        bombers(randint(112, 272), randint(80, 240))
     }
 })
 game.onUpdateInterval(2000, function () {
@@ -1288,6 +1393,18 @@ forever(function () {
         true
         )) {
             value.follow(Jeff, 45)
+        }
+    }
+})
+forever(function () {
+    for (let value of enemies3) {
+        if (sight.isInSight(
+        value,
+        Jeff,
+        100,
+        true
+        )) {
+            value.follow(Jeff, 75)
         }
     }
 })
