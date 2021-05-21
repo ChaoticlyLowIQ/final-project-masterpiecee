@@ -6,6 +6,8 @@ namespace SpriteKind {
     export const bossbullets = SpriteKind.create()
     export const playerbullet = SpriteKind.create()
     export const shotgunBullet = SpriteKind.create()
+    export const bomb = SpriteKind.create()
+    export const boombomb = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const bosshealth = StatusBarKind.create()
@@ -85,6 +87,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.boolet, function (sprite, otherS
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (setSafe == 0) {
+        setSafe += 1
         if (controller.up.isPressed()) {
             Jeff.setVelocity(0, -75)
             animation.runImageAnimation(
@@ -462,12 +465,10 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             )
         }
         Jeff.setKind(SpriteKind.safe)
-        setSafe += 1
         pause(500)
         Jeff.setKind(SpriteKind.Player)
         Jeff.setVelocity(0, 0)
         pause(500)
-        setSafe = 0
     }
 })
 function spawnBoss2 (x: number, y: number) {
@@ -524,18 +525,22 @@ function spawnBoss2 (x: number, y: number) {
         ...................ffff.....ffff..................
         `, SpriteKind.boss)
     boss.setPosition(x, y)
-    boss2bar = statusbars.create(100, 4, StatusBarKind.bosshealth)
-    boss2bar.positionDirection(CollisionDirection.Bottom)
+    bossbar = statusbars.create(100, 4, StatusBarKind.bosshealth)
+    bossbar.positionDirection(CollisionDirection.Bottom)
 }
 statusbars.onZero(StatusBarKind.bosshealth, function (status) {
     boss.destroy(effects.disintegrate, 500)
     pause(1000)
-    currentlevel += 1
-    if (hasNextLevel()) {
-        pause(100)
-        game.splash("Next Level")
+    if (currentlevel == 3) {
+        currentlevel += 1
+        if (hasNextLevel()) {
+            pause(100)
+            game.splash("Next Level")
+        }
+        setLevelTitleMap(currentlevel)
+    } else {
+        game.over(true)
     }
-    setLevelTitleMap(currentlevel)
 })
 sprites.onOverlap(SpriteKind.playerbullet, SpriteKind.Enemy, function (sprite, otherSprite) {
     sprite.destroy()
@@ -718,6 +723,91 @@ sprites.onOverlap(SpriteKind.playerbullet, SpriteKind.boss, function (sprite, ot
     bossbar.value += -10
     sprite.destroy()
 })
+sprites.onOverlap(SpriteKind.bomb, SpriteKind.Player, function (sprite, otherSprite) {
+    sprite.setImage(img`
+        . . . . . . . . . e . . . . . . 
+        . . . . . . . . e . . . . . . . 
+        . . . . . 2 2 2 2 2 2 2 . . . . 
+        . . . . 2 2 2 2 2 2 2 2 2 . . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . 2 2 2 1 1 2 1 1 2 2 2 . . 
+        . . . 2 2 2 1 1 2 1 1 2 2 2 . . 
+        . . . 2 2 2 1 1 2 1 1 2 2 2 . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . 2 2 2 2 2 2 2 2 2 2 2 . . 
+        . . . . 2 2 2 2 2 2 2 2 2 . . . 
+        . . . . . 2 2 2 2 2 2 2 . . . . 
+        . . . . . . 2 . . . 2 . . . . . 
+        . . . . . . 2 . . . 2 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `)
+    enemies3.removeAt(enemies3.indexOf(sprite))
+    sprite.follow(otherSprite, 0)
+    pause(500)
+    animation.runImageAnimation(
+    sprite,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 4 4 4 4 4 . . . . . . 
+        . . . 4 4 4 5 5 5 d 4 4 4 4 . . 
+        . . 4 d 5 d 5 5 5 d d d 4 4 . . 
+        . . 4 5 5 1 1 1 d d 5 5 5 4 . . 
+        . 4 5 5 5 1 1 1 5 1 1 5 5 4 4 . 
+        . 4 d d 1 1 5 5 5 1 1 5 5 d 4 . 
+        . 4 5 5 1 1 5 1 1 5 5 d d d 4 . 
+        . 2 5 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . 2 d 5 5 d 1 1 1 5 1 1 5 5 2 . 
+        . . 2 4 d d 5 5 5 5 d d 5 4 . . 
+        . . . 2 2 4 d 5 5 d d 4 4 . . . 
+        . . 2 2 2 2 2 4 4 4 2 2 2 . . . 
+        . . . 2 2 4 4 4 4 4 4 2 2 . . . 
+        . . . . . 2 2 2 2 2 2 . . . . . 
+        `,img`
+        . . . . 2 2 2 2 2 2 2 2 . . . . 
+        . . . 2 4 4 4 5 5 4 4 4 2 2 2 . 
+        . 2 2 5 5 d 4 5 5 5 4 4 4 4 2 . 
+        . 2 4 5 5 5 5 d 5 5 5 4 5 4 2 2 
+        . 2 4 d d 5 5 5 5 5 5 d 4 4 4 2 
+        2 4 5 5 d 5 5 5 d d d 5 5 5 4 4 
+        2 4 5 5 4 4 4 d 5 5 d 5 5 5 4 4 
+        4 4 4 4 . . 2 4 5 5 . . 4 4 4 4 
+        . . b b b b 2 4 4 2 b b b b . . 
+        . b d d d d 2 4 4 2 d d d d b . 
+        b d d b b b 2 4 4 2 b b b d d b 
+        b d d b b b b b b b b b b d d b 
+        b b d 1 1 3 1 1 d 1 d 1 1 d b b 
+        . . b b d d 1 1 3 d d 1 b b . . 
+        . . 2 2 4 4 4 4 4 4 4 4 2 2 . . 
+        . . . 2 2 4 4 4 4 4 2 2 2 . . . 
+        `,img`
+        . . . . . . . . b b . . . . . . 
+        . . . . . . . . b b . . . . . . 
+        . . . b b b . . . . . . . . . . 
+        . . b d d b . . . . . . . b b . 
+        . b d d d b . . . . . . b d d b 
+        . b d d b . . . . b b . b d d b 
+        . b b b . . . . . b b . . b b . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . b b b d d d d d d b b b . . 
+        . b d c c c b b b b c c d d b . 
+        b d d c b . . . . . b c c d d b 
+        c d d b b . . . . . . b c d d c 
+        c b d d d b b . . . . b d d c c 
+        . c c b d d d d b . c c c c c c 
+        . . . c c c c c c . . . . . . . 
+        `],
+    100,
+    false
+    )
+    if (otherSprite.overlapsWith(sprite)) {
+        playerHealth.value += -33
+    }
+    pause(500)
+    sprite.destroy()
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.bossbullets, function (sprite, otherSprite) {
     otherSprite.destroy()
     playerHealth.value += -25
@@ -765,16 +855,21 @@ function bombers (x: number, y: number) {
         . . . . . . f . . . f . . . . . 
         . . . . . . f . . . f . . . . . 
         . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Enemy)
+        `, SpriteKind.bomb)
     angybullet.setPosition(x, y)
     enemies3.push(angybullet)
 }
+sprites.onOverlap(SpriteKind.playerbullet, SpriteKind.bomb, function (sprite, otherSprite) {
+    sprite.destroy()
+    otherSprite.destroy(effects.disintegrate, 500)
+    enemies3.removeAt(enemies3.indexOf(otherSprite))
+})
 statusbars.onZero(StatusBarKind.Health, function (status) {
     game.over(false)
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile21`, function (sprite, location) {
     playerHealth.value += 50
-    tiles.setTileAt(location, assets.tile`myTile9`)
+    tiles.setTileAt(location, sprites.dungeon.floorLight0)
 })
 function createBulletman (x: number, y: number) {
     angybullet = sprites.create(img`
@@ -861,6 +956,7 @@ function setLevelTitleMap (num: number) {
     } else if (num == 4) {
         tiles.setTilemap(tilemap`level12`)
         spawnBoss2(200, 165)
+        Jeff.setPosition(200, 320)
     } else {
     	
     }
@@ -892,13 +988,12 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenNorth, function (
 let enemybullet: Sprite = null
 let bossbullet: Sprite = null
 let shotgunbullet: Sprite = null
-let enemies3: Sprite[] = []
 let angybullet: Sprite = null
+let enemies3: Sprite[] = []
 let bullet: Sprite = null
 let dir = 0
 let enemies_2: Sprite[] = []
 let enemies: Sprite[] = []
-let boss2bar: StatusBarSprite = null
 let bossbar: StatusBarSprite = null
 let boss: Sprite = null
 let ammoCount = 0
@@ -927,14 +1022,14 @@ Jeff = sprites.create(img`
     `, SpriteKind.Player)
 scene.setBackgroundColor(15)
 scene.cameraFollowSprite(Jeff)
-levelcount = 5
-currentlevel = 4
+levelcount = 4
+currentlevel = 0
 playerHealth = statusbars.create(20, 2, StatusBarKind.Health)
 playerHealth.attachToSprite(Jeff)
 setLevelTitleMap(currentlevel)
 setSafe = 0
 ammoCount = 30
-Jeff.setFlag(SpriteFlag.Ghost, true)
+Jeff.setFlag(SpriteFlag.Ghost, false)
 game.onUpdate(function () {
     Jeff.x += controller.dx()
     Jeff.y += controller.dy()
@@ -1353,6 +1448,9 @@ game.onUpdateInterval(1000, function () {
         enemybullet.setKind(SpriteKind.boolet)
     }
 })
+game.onUpdateInterval(1000, function () {
+    setSafe = 0
+})
 forever(function () {
     if (controller.down.isPressed() && controller.right.isPressed()) {
         dir = 3
@@ -1404,7 +1502,7 @@ forever(function () {
         100,
         true
         )) {
-            value.follow(Jeff, 75)
+            value.follow(Jeff, 70)
         }
     }
 })
